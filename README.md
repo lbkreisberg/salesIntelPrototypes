@@ -6,3 +6,5 @@ RepRules in Results:  https://lbkreisberg.github.io/salesIntelPrototypes/Rep-Rul
 RepRules Configuration:  https://lbkreisberg.github.io/salesIntelPrototypes/RepIntel-Rules-Set-Up.html
 
 RepIntel Settings:  https://lbkreisberg.github.io/salesIntelPrototypes/RepIntel-Settings.html
+
+Model Weight Adjustment: https://lbkreisberg.github.io/salesIntelPrototypes/Model-Weight-Adjustment.html
