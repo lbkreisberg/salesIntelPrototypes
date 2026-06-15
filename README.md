@@ -8,3 +8,5 @@ RepRules Configuration:  https://lbkreisberg.github.io/salesIntelPrototypes/RepI
 RepIntel Settings:  https://lbkreisberg.github.io/salesIntelPrototypes/RepIntel-Settings.html
 
 Model Weight Adjustment: https://lbkreisberg.github.io/salesIntelPrototypes/Model-Weight-Adjustment.html
+
+Intent Topic Recommender: https://lbkreisberg.github.io/salesIntelPrototypes/Intent-Topic-Recommender.html
