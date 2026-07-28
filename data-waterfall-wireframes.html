@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Data waterfall — wireframes</title>
+<style>
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: #f4f3ef;
+    color: #2c2c2a;
+    margin: 0;
+    padding: 40px 24px;
+  }
+  .page-title {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  .page-subtitle {
+    font-size: 13px;
+    color: #6b6a66;
+    margin-bottom: 40px;
+  }
+  .section {
+    margin-bottom: 40px;
+  }
+  .label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #4d4c49;
+    border-bottom: 1px solid #d8d6cf;
+    padding-bottom: 6px;
+    margin-bottom: 14px;
+  }
+  .modal {
+    background: #ffffff;
+    border: 1px solid #b8b6ae;
+    border-radius: 4px;
+    width: 560px;
+    height: 337px;
+    display: flex;
+    flex-direction: column;
+  }
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #e4e2db;
+    padding: 12px 16px;
+    font-size: 15px;
+    font-weight: 500;
+  }
+  .modal-body {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+  }
+  .nav {
+    width: 150px;
+    border-right: 1px solid #e4e2db;
+    padding: 10px 0;
+  }
+  .nav-item {
+    padding: 8px 16px;
+    font-size: 13px;
+    color: #6b6a66;
+  }
+  .nav-item.active {
+    font-weight: 500;
+    color: #2c2c2a;
+    background: #f4f3ef;
+    border-left: 2px solid #2c2c2a;
+  }
+  .content {
+    flex: 1;
+    padding: 14px 16px;
+    overflow-y: auto;
+  }
+  .footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    border-top: 1px solid #e4e2db;
+    padding: 10px 16px;
+  }
+  button {
+    font-size: 13px;
+    padding: 6px 14px;
+    border: 1px solid #d8d6cf;
+    border-radius: 4px;
+    background: #ffffff;
+    cursor: default;
+  }
+  button.primary {
+    border-color: #2c2c2a;
+  }
+  .toggle-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px dashed #b8b6ae;
+    padding: 8px 10px;
+    margin-bottom: 12px;
+  }
+  .toggle {
+    width: 32px;
+    height: 18px;
+    border: 1px solid #b8b6ae;
+    border-radius: 9px;
+    position: relative;
+    flex-shrink: 0;
+  }
+  .toggle-dot {
+    width: 14px;
+    height: 14px;
+    background: #6b6a66;
+    border-radius: 50%;
+    position: absolute;
+    top: 1px;
+    left: 16px;
+  }
+  .field-header {
+    font-size: 12px;
+    font-weight: 500;
+    margin-bottom: 2px;
+  }
+  .field-hint {
+    font-size: 11px;
+    color: #6b6a66;
+    margin-bottom: 8px;
+  }
+  .field-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .field-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    border: 1px solid #d8d6cf;
+    padding: 4px 8px;
+  }
+  .field-row.dim {
+    opacity: 0.5;
+  }
+  .scroll-note {
+    font-size: 10px;
+    color: #9b9a95;
+    padding-left: 2px;
+  }
+  .radio-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .radio-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+  }
+  .map-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid #d8d6cf;
+    padding: 6px 10px;
+  }
+  select {
+    font-size: 11px;
+    max-width: 140px;
+    border: 1px solid #d8d6cf;
+    border-radius: 3px;
+    padding: 2px 4px;
+  }
+  .desc {
+    font-size: 11px;
+    color: #6b6a66;
+    margin-bottom: 10px;
+    line-height: 1.5;
+  }
+  .small-modal {
+    background: #ffffff;
+    border: 1px solid #b8b6ae;
+    border-radius: 4px;
+    width: 380px;
+    padding: 16px 18px;
+  }
+  .small-modal-title {
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 8px;
+  }
+  .small-modal-body {
+    font-size: 13px;
+    color: #4d4c49;
+    line-height: 1.5;
+    margin-bottom: 14px;
+  }
+  .gate-card {
+    background: #ffffff;
+    border: 1px solid #b8b6ae;
+    border-radius: 4px;
+    padding: 16px 18px;
+    max-width: 460px;
+  }
+  .gate-card.dashed {
+    border-style: dashed;
+    color: #9b9a95;
+    font-size: 13px;
+  }
+  .gate-count {
+    font-size: 14px;
+    margin-bottom: 14px;
+  }
+  .gate-toggle-box {
+    border: 1px dashed #b8b6ae;
+    padding: 10px 12px;
+  }
+  .gate-toggle-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .gate-fineprint {
+    font-size: 12px;
+    color: #4d4c49;
+    margin-top: 8px;
+    line-height: 1.5;
+  }
+  .gate-warning {
+    border: 1px dashed #b8b6ae;
+    padding: 10px 12px;
+    font-size: 13px;
+    color: #4d4c49;
+  }
+  a {
+    font-size: 13px;
+    color: #2c2c2a;
+  }
+</style>
+</head>
+<body>
+
+<div class="page-title">Data waterfall — wireframes</div>
+<div class="page-subtitle">Low fidelity. Function over form.</div>
+
+<div class="section">
+  <div class="label">Settings — Setup tab</div>
+  <div class="modal">
+    <div class="modal-header">
+      <span>Data waterfall settings</span>
+      <span>&times;</span>
+    </div>
+    <div class="modal-body">
+      <div class="nav">
+        <div class="nav-item active">Setup</div>
+        <div class="nav-item">Permissions</div>
+        <div class="nav-item">Integration mapping</div>
+      </div>
+      <div class="content">
+        <div class="toggle-row">
+          <span style="font-size:13px; font-weight:500;">Enable data waterfall</span>
+          <div class="toggle"><div class="toggle-dot"></div></div>
+        </div>
+        <div class="field-header">Prioritized fields <span style="color:#9b9a95; font-weight:400;">— pick up to 3</span></div>
+        <div class="field-hint">[2 of 3 selected]</div>
+        <div class="field-list">
+          <label class="field-row"><input type="checkbox" checked disabled> Direct phone</label>
+          <label class="field-row"><input type="checkbox" checked disabled> Mobile phone</label>
+          <label class="field-row dim"><input type="checkbox" disabled> Personal email</label>
+          <label class="field-row dim"><input type="checkbox" disabled> Title</label>
+          <label class="field-row dim"><input type="checkbox" disabled> Seniority</label>
+          <label class="field-row dim"><input type="checkbox" disabled> LinkedIn URL</label>
+          <label class="field-row dim"><input type="checkbox" disabled> Department</label>
+          <div class="scroll-note">[full contact field list, scrollable]</div>
+        </div>
+      </div>
+    </div>
+    <div class="footer">
+      <button>Cancel</button>
+      <button class="primary">Save</button>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="label">Settings — Permissions tab</div>
+  <div class="modal">
+    <div class="modal-header">
+      <span>Data waterfall settings</span>
+      <span>&times;</span>
+    </div>
+    <div class="modal-body">
+      <div class="nav">
+        <div class="nav-item">Setup</div>
+        <div class="nav-item active">Permissions</div>
+        <div class="nav-item">Integration mapping</div>
+      </div>
+      <div class="content">
+        <div class="desc" style="margin-bottom:10px;">Who can spend waterfall credits during export.</div>
+        <div class="radio-list">
+          <div class="radio-row"><input type="radio" name="perm" checked disabled> Admins only</div>
+          <div class="radio-row"><input type="radio" name="perm" disabled> All admins and users</div>
+          <div class="radio-row"><input type="radio" name="perm" disabled> Specified users only</div>
+        </div>
+        <div class="scroll-note" style="margin-top:10px;">[searchable user checklist appears when "specified users only" is selected]</div>
+      </div>
+    </div>
+    <div class="footer">
+      <button>Cancel</button>
+      <button class="primary">Save</button>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="label">Settings — Integration mapping tab</div>
+  <div class="modal">
+    <div class="modal-header">
+      <span>Data waterfall settings</span>
+      <span>&times;</span>
+    </div>
+    <div class="modal-body">
+      <div class="nav">
+        <div class="nav-item">Setup</div>
+        <div class="nav-item">Permissions</div>
+        <div class="nav-item active">Integration mapping</div>
+      </div>
+      <div class="content">
+        <div class="desc">Maps the waterfall tracking field for each connected integration. Not required to use waterfall, but a direct export won't offer waterfall until its field is mapped.</div>
+        <div class="field-list">
+          <div class="map-row"><span style="font-size:12px;">Salesforce</span><select disabled><option>Waterfall_Fields__c</option></select></div>
+          <div class="map-row"><span style="font-size:12px;">HubSpot</span><select disabled><option>-- skip --</option></select></div>
+          <div class="map-row"><span style="font-size:12px;">Outreach</span><select disabled><option>-- skip --</option></select></div>
+        </div>
+        <div class="scroll-note" style="margin-top:8px;">[auto-detects connected integrations for this account]</div>
+      </div>
+    </div>
+    <div class="footer">
+      <button>Cancel</button>
+      <button class="primary">Save</button>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="label">Friction modal — shown every save if integrations are connected and unmapped</div>
+  <div class="small-modal">
+    <div class="small-modal-title">Some integrations aren't mapped</div>
+    <div class="small-modal-body">Salesforce and Outreach aren't mapped to a waterfall tracking field. Waterfall won't run for direct exports to those destinations until they are.</div>
+    <div style="display:flex; justify-content:flex-end; gap:8px;">
+      <button>Go to mapping</button>
+      <button class="primary">Save anyway</button>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="label">Export gate — mapped, or CSV / custom export app</div>
+  <div class="gate-card">
+    <div class="gate-count">14 records are missing prioritized fields.</div>
+    <div class="gate-toggle-box">
+      <div class="gate-toggle-row">
+        <span style="font-size:13px;">Fill from the SalesIntel data waterfall</span>
+        <div class="toggle" style="width:36px; height:20px;"><div class="toggle-dot" style="width:16px; height:16px; left:18px;"></div></div>
+      </div>
+      <div class="gate-fineprint">Uses up to 14 data credits. Export may take up to 30 minutes, and you'll get an email when it's ready.</div>
+    </div>
+    <div style="text-align:right; margin-top:16px;"><button>Continue</button></div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="label">Export gate — native integration, tracking field not mapped</div>
+  <div class="gate-card">
+    <div class="gate-count" style="margin-bottom:10px;">14 records are missing prioritized fields.</div>
+    <div class="gate-warning">
+      SalesIntel data waterfall can't run for this destination yet. Waterfall tracking field has not been mapped.
+      <div style="margin-top:6px;"><a href="#">Map this field &rarr;</a></div>
+    </div>
+    <div style="text-align:right; margin-top:16px;"><button>Continue without waterfall</button></div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="label">Export gate — not permitted, or company export</div>
+  <div class="gate-card dashed">
+    [current path, unchanged]
+  </div>
+</div>
+
+<div style="position: fixed; bottom: 16px; right: 20px; font-size: 11px; color: #9b9a95;">Last updated: July 28, 2026</div>
+
+</body>
+</html>
