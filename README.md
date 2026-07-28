@@ -10,3 +10,5 @@ RepIntel Settings:  https://lbkreisberg.github.io/salesIntelPrototypes/RepIntel-
 Model Weight Adjustment: https://lbkreisberg.github.io/salesIntelPrototypes/Model-Weight-Adjustment.html
 
 Intent Topic Recommender: https://lbkreisberg.github.io/salesIntelPrototypes/Intent-Topic-Recommender.html
+
+Data Waterfall Wireframes: https://lbkreisberg.github.io/salesIntelPrototypes/data-waterfall-wireframes.html
