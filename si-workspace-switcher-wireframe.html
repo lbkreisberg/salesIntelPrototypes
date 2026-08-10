@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>SalesIntel — workspace switcher prototype</title>
+<style>
+  :root {
+    --navy: #171b2c;
+    --navy-2: #1f2438;
+    --navy-3: #1a2b2a;
+    --ink: #1a1d29;
+    --ink-2: #5b5f6e;
+    --line: #e3e5ea;
+    --si-accent: #e8623d;
+    --si-accent-dim: rgba(232,98,61,0.14);
+    --pc-accent: #2f8fd6;
+    --pc-accent-dim: rgba(47,143,214,0.14);
+    --muxi-accent: #1d9e75;
+    --muxi-accent-dim: rgba(29,158,117,0.14);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; font-family: -apple-system, "Segoe UI", Helvetica, Arial, sans-serif; background: #f4f5f7; color: var(--ink); }
+
+  /* ---- Variant toggle (meta control, not part of the product itself) ---- */
+  #variant-bar {
+    display: flex; align-items: center; gap: 12px; padding: 10px 20px;
+    background: #fff7e6; border-bottom: 1px solid #f0dfb8; font-size: 12.5px; color: #6b5a2e;
+  }
+  #variant-bar .vlabel { font-weight: 600; }
+  #variant-switcher { display: flex; gap: 6px; }
+  #variant-switcher button {
+    border: 1px solid #e3d3a0; background: #fff; padding: 5px 12px; border-radius: 6px;
+    font-size: 12px; font-weight: 500; color: #6b5a2e; cursor: pointer;
+  }
+  #variant-switcher button.active { background: #6b5a2e; color: #fff; border-color: #6b5a2e; }
+
+  #app { display: flex; height: calc(100vh - 41px); overflow: hidden; }
+
+  /* ---- Rail ---- */
+  #rail {
+    width: 220px;
+    background: var(--navy);
+    color: #cfd2dc;
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    transition: background 0.25s ease;
+  }
+  #rail.mode-pc { background: var(--navy-2); }
+  #rail.mode-muxi { background: var(--navy-3); }
+  .rail-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 20px 18px;
+    font-weight: 600;
+    font-size: 16px;
+    color: #fff;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    cursor: pointer;
+    position: relative;
+    user-select: none;
+  }
+  .rail-brand:hover { background: rgba(255,255,255,0.04); }
+  .rail-brand .dot {
+    width: 26px; height: 26px; border-radius: 7px;
+    background: var(--si-accent);
+    flex-shrink: 0;
+    transition: background 0.25s ease;
+  }
+  #rail.mode-pc .rail-brand .dot { background: var(--pc-accent); }
+  #rail.mode-muxi .rail-brand .dot { background: var(--muxi-accent); }
+  .rail-brand .chev { margin-left: auto; opacity: 0.6; transition: transform 0.15s ease; }
+  .rail-brand.open .chev { transform: rotate(180deg); }
+
+  #switcher-dropdown {
+    display: none;
+    position: absolute; left: 12px; right: 12px; top: 62px; z-index: 20;
+    background: #262c42; border: 1px solid rgba(255,255,255,0.1); border-radius: 10px;
+    padding: 6px; box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+  }
+  #switcher-dropdown.open { display: block; }
+  .switcher-opt {
+    display: flex; align-items: center; gap: 10px; padding: 9px 10px;
+    border-radius: 7px; font-size: 13px; color: #cfd2dc; cursor: pointer;
+  }
+  .switcher-opt:hover { background: rgba(255,255,255,0.07); }
+  .switcher-opt .swatch { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
+  .switcher-opt .check { margin-left: auto; opacity: 0; font-size: 12px; }
+  .switcher-opt.current .check { opacity: 1; }
+
+  .rail-nav { flex: 1; padding: 10px 10px; overflow-y: auto; }
+  .rail-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 9px 12px; margin-bottom: 2px;
+    border-radius: 7px; font-size: 13.5px; cursor: pointer;
+    color: #b7bacb; transition: background 0.15s ease, color 0.15s ease;
+  }
+  .rail-item:hover { background: rgba(255,255,255,0.06); color: #fff; }
+  .rail-item.active { background: var(--si-accent-dim); color: #fff; }
+  #rail.mode-pc .rail-item.active { background: var(--pc-accent-dim); color: #fff; }
+  #rail.mode-muxi .rail-item.active { background: var(--muxi-accent-dim); color: #fff; }
+  .rail-item .ic { width: 8px; height: 8px; border-radius: 50%; background: currentColor; opacity: 0.5; flex-shrink: 0; }
+  .rail-foot { padding: 14px 18px; font-size: 11.5px; color: #6b6f80; border-top: 1px solid rgba(255,255,255,0.08); }
+
+  /* ---- Shell ---- */
+  #shell { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+  #topbar {
+    height: 60px; background: #fff; border-bottom: 1px solid var(--line);
+    display: flex; align-items: center; gap: 16px; padding: 0 20px; flex-shrink: 0;
+  }
+  #search {
+    flex: 1; max-width: 380px; height: 36px; border: 1px solid var(--line); border-radius: 8px;
+    padding: 0 14px; font-size: 13px; color: var(--ink-2); display: flex; align-items: center;
+    background: #fafafb;
+  }
+  #topbar-right { display: flex; align-items: center; gap: 16px; margin-left: auto; font-size: 12.5px; color: var(--ink-2); }
+  #credits-slot { white-space: nowrap; }
+  #pc-icons { display: flex; align-items: center; gap: 14px; }
+  .pc-ic { display: flex; color: var(--ink-2); cursor: pointer; }
+  .pc-ic:hover { color: var(--ink); }
+  #avatar { width: 30px; height: 30px; border-radius: 50%; background: #cfd6e0; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; color: #4a5164; flex-shrink: 0; }
+
+  /* ---- Main content ---- */
+  #main { flex: 1; overflow-y: auto; padding: 24px 28px; position: relative; }
+  .page-title { font-size: 20px; font-weight: 600; margin: 0 0 4px; }
+  .page-sub { font-size: 13px; color: var(--ink-2); margin: 0 0 22px; }
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .card {
+    background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 16px;
+    min-height: 130px;
+  }
+  .card h3 { font-size: 13px; font-weight: 600; margin: 0 0 10px; }
+  .card .stat { font-size: 24px; font-weight: 600; margin: 6px 0 2px; }
+  .card .stat-label { font-size: 11.5px; color: var(--ink-2); }
+  .card .bars { display: flex; align-items: flex-end; gap: 6px; height: 60px; margin-top: 10px; }
+  .card .bars div { flex: 1; background: var(--si-accent-dim); border-radius: 3px 3px 0 0; }
+  #main.mode-pc .card .bars div { background: var(--pc-accent-dim); }
+  #main.mode-muxi .card .bars div { background: var(--muxi-accent-dim); }
+  .placeholder-line { height: 8px; background: #eef0f3; border-radius: 4px; margin-bottom: 8px; }
+  .placeholder-line.short { width: 60%; }
+
+  /* ---- SSO transition overlay ---- */
+  #sso {
+    position: fixed; inset: 0; background: rgba(23,27,44,0.94); z-index: 50;
+    display: none; align-items: center; justify-content: center; flex-direction: column;
+    color: #fff; gap: 14px;
+  }
+  #sso.show { display: flex; }
+  .spinner {
+    width: 26px; height: 26px; border-radius: 50%;
+    border: 2.5px solid rgba(255,255,255,0.25); border-top-color: #fff;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  #sso .sso-text { font-size: 13.5px; color: #cfd2dc; }
+  #sso .sso-sub { font-size: 11.5px; color: #7d8092; }
+
+  .topbar-hide { display: none !important; }
+
+  .note {
+    margin-top: 22px; font-size: 11.5px; color: #9a9da8; border-top: 1px dashed var(--line);
+    padding-top: 12px;
+  }
+</style>
+</head>
+<body>
+
+<div id="variant-bar">
+  <span class="vlabel">Prototype variant:</span>
+  <div id="variant-switcher">
+    <button id="vbtn-two" class="active" onclick="setVariant('two')">Two-way (merged)</button>
+    <button id="vbtn-three" onclick="setVariant('three')">Three-way (kept separate)</button>
+  </div>
+</div>
+
+<div id="app">
+  <nav id="rail" class="mode-si">
+    <div class="rail-brand" id="brand-trigger" onclick="toggleDropdown()">
+      <span class="dot"></span><span id="brand-label">SalesIntel</span>
+      <span class="chev">&#9660;</span>
+      <div id="switcher-dropdown"></div>
+    </div>
+    <div class="rail-nav" id="rail-nav"></div>
+    <div class="rail-foot" id="rail-foot">SalesIntel workspace</div>
+  </nav>
+
+  <div id="shell">
+    <div id="topbar">
+      <div id="search">Search...</div>
+      <div id="topbar-right">
+        <span id="credits-slot">122,277 credits available</span>
+        <div id="pc-icons" class="topbar-hide">
+          <span class="pc-ic" title="Notifications"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 8a6 6 0 1 1 12 0c0 3 1 5 1.5 6H4.5C5 13 6 11 6 8Z"/><path d="M9.5 18.5a2.5 2.5 0 0 0 5 0"/></svg></span>
+          <span class="pc-ic" title="Calls"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6.5 4h3l1.5 4-2 1.5a11 11 0 0 0 5.5 5.5L16 13l4 1.5v3a2 2 0 0 1-2 2C10.5 19.5 4.5 13.5 4.5 6a2 2 0 0 1 2-2Z"/></svg></span>
+          <span class="pc-ic" title="Mail"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 6h16v12H4z"/><path d="M4 7l8 6 8-6"/></svg></span>
+        </div>
+        <div id="avatar">LK</div>
+      </div>
+    </div>
+
+    <main id="main" class="mode-si">
+      <h1 class="page-title" id="page-title">Home</h1>
+      <p class="page-sub" id="page-sub">Same shell, same top bar. The rail and content below swap on switch.</p>
+      <div class="grid" id="grid"></div>
+      <div class="note">Prototype note: rail items are clickable for nav feel; content stays representative rather than fully built out per screen.</div>
+    </main>
+  </div>
+</div>
+
+<div id="sso">
+  <div class="spinner"></div>
+  <div class="sso-text" id="sso-text">Connecting...</div>
+  <div class="sso-sub">Signing in with your SalesIntel session</div>
+</div>
+
+<script>
+const navSI = ["Home","Discover Prospects","Build AI Workflows","Execute GTM","Enrich Data","Settings"];
+const navMerged = ["Dashboard","Sequences","Live Dialer","Inbox","Contacts","Accounts","Tasks","Reports","Coaching","Settings"];
+const navMuxi = ["Dashboard","Live Dialer","Analytics","Ask Muxi","Coaching","Settings"];
+const navPC = ["Dashboard","Inbox","Sequences","Templates","Contacts","Accounts","Tasks","Calls","Reports"];
+
+const cardsSI = [
+  {t:"Sessions", stat:"63.2k", label:"past 30 days", bars:[40,55,70,90]},
+  {t:"Searches", stat:"476", label:"this week", bars:[30,45,60,100]},
+  {t:"Intent", stat:"1,912", label:"companies surging", bars:[55,50,60,100]},
+  {t:"Growth signals", lines:3},
+  {t:"Website visitors", stat:"48", label:"past 7 days", bars:[10,60,100,50,45]},
+  {t:"Pipeline growth digest", lines:2},
+];
+const cardsMerged = [
+  {t:"Dials", stat:"0", label:"this week", bars:[20,40,60,80]},
+  {t:"Connects", stat:"0", label:"this week", bars:[15,35,55,75]},
+  {t:"Connect rate", stat:"0.0%", label:"this week"},
+  {t:"Meetings booked", stat:"0", label:"this week", bars:[10,30,50,70]},
+  {t:"Open sequences", lines:3},
+  {t:"Inbox activity", lines:2},
+];
+const cardsMuxi = [
+  {t:"Dials", stat:"0", label:"this week", bars:[20,40,60,80]},
+  {t:"Connects", stat:"0", label:"this week", bars:[15,35,55,75]},
+  {t:"Connect rate", stat:"0.0%", label:"this week"},
+  {t:"Avg talk time", stat:"0:00", label:"this week"},
+  {t:"Meetings booked", stat:"0", label:"this week", bars:[10,30,50,70]},
+  {t:"Coaching queue", lines:2},
+];
+const cardsPC = [
+  {t:"Email open rate", stat:"0.0%", label:"last 7 days", bars:[10,10,10,10]},
+  {t:"Reply rate", stat:"0.0%", label:"last 7 days", bars:[5,5,5,5]},
+  {t:"Live feed", lines:3},
+  {t:"Active sequences", lines:2},
+  {t:"Tasks due today", lines:2},
+  {t:"Accounts touched", lines:2},
+];
+
+const NAV_BY_MODE = {si: navSI, merged: navMerged, muxi: navMuxi, pc: navPC};
+const CARDS_BY_MODE = {si: cardsSI, merged: cardsMerged, muxi: cardsMuxi, pc: cardsPC};
+const LABEL_BY_MODE = {si: "SalesIntel", merged: "ProspectConnect", muxi: "Muxi", pc: "ProspectConnect"};
+const CLASS_BY_MODE = {si: "mode-si", merged: "mode-pc", muxi: "mode-muxi", pc: "mode-pc"};
+
+let variant = "two";
+let currentMode = "si";
+
+const ACCENT_BY_MODE = {si: "var(--si-accent)", merged: "var(--pc-accent)", muxi: "var(--muxi-accent)", pc: "var(--pc-accent)"};
+
+function switcherOptions() {
+  return variant === "two"
+    ? [{mode:"si", label:"SalesIntel"}, {mode:"merged", label:"ProspectConnect"}]
+    : [{mode:"si", label:"SalesIntel"}, {mode:"muxi", label:"Muxi"}, {mode:"pc", label:"ProspectConnect"}];
+}
+
+function renderDropdown() {
+  const el = document.getElementById("switcher-dropdown");
+  el.innerHTML = "";
+  switcherOptions().forEach(b => {
+    const opt = document.createElement("div");
+    opt.className = "switcher-opt" + (b.mode === currentMode ? " current" : "");
+    opt.innerHTML = '<span class="swatch" style="background:' + ACCENT_BY_MODE[b.mode] + '"></span>' +
+      '<span>' + b.label + '</span><span class="check">&#10003;</span>';
+    opt.onclick = (e) => { e.stopPropagation(); closeDropdown(); switchTo(b.mode); };
+    el.appendChild(opt);
+  });
+}
+
+function toggleDropdown() {
+  document.getElementById("switcher-dropdown").classList.toggle("open");
+  document.getElementById("brand-trigger").classList.toggle("open");
+}
+function closeDropdown() {
+  document.getElementById("switcher-dropdown").classList.remove("open");
+  document.getElementById("brand-trigger").classList.remove("open");
+}
+document.addEventListener("click", (e) => {
+  if (!document.getElementById("brand-trigger").contains(e.target)) closeDropdown();
+});
+
+function renderNav(mode) {
+  const items = NAV_BY_MODE[mode];
+  const railNav = document.getElementById("rail-nav");
+  railNav.innerHTML = "";
+  items.forEach((label, i) => {
+    const el = document.createElement("div");
+    el.className = "rail-item" + (i === 0 ? " active" : "");
+    el.innerHTML = '<span class="ic"></span><span>' + label + '</span>';
+    el.onclick = () => {
+      document.querySelectorAll(".rail-item").forEach(x => x.classList.remove("active"));
+      el.classList.add("active");
+      document.getElementById("page-title").textContent = label;
+    };
+    railNav.appendChild(el);
+  });
+}
+
+function renderCards(mode) {
+  const cards = CARDS_BY_MODE[mode];
+  const grid = document.getElementById("grid");
+  grid.innerHTML = "";
+  cards.forEach(c => {
+    const card = document.createElement("div");
+    card.className = "card";
+    let inner = "<h3>" + c.t + "</h3>";
+    if (c.stat) {
+      inner += '<div class="stat">' + c.stat + '</div><div class="stat-label">' + c.label + '</div>';
+    }
+    if (c.bars) {
+      inner += '<div class="bars">' + c.bars.map(h => '<div style="height:' + h + '%"></div>').join("") + '</div>';
+    }
+    if (c.lines) {
+      for (let i = 0; i < c.lines; i++) {
+        inner += '<div class="placeholder-line' + (i === c.lines - 1 ? ' short' : '') + '"></div>';
+      }
+    }
+    card.innerHTML = inner;
+    grid.appendChild(card);
+  });
+}
+
+const SUB_BY_MODE = {
+  si: "Same shell, same top bar. The rail and content below swap on switch.",
+  merged: "Merged dialer and cadence nav, under the ProspectConnect name. Same top bar carried over from SalesIntel.",
+  muxi: "Muxi kept as its own surface. Minimal top bar, same avatar position as SalesIntel.",
+  pc: "ProspectConnect kept as its own surface, with its own notification, call, and mail icons in the top bar."
+};
+const TITLE_BY_MODE = {si: "Home", merged: "Dashboard", muxi: "Dashboard", pc: "Dashboard"};
+
+function applyMode(mode) {
+  currentMode = mode;
+  const cls = CLASS_BY_MODE[mode];
+  document.getElementById("rail").className = cls;
+  document.getElementById("main").className = cls;
+  document.getElementById("brand-label").textContent = LABEL_BY_MODE[mode];
+  document.getElementById("rail-foot").textContent =
+    mode === "merged" ? "Merged: Muxi + ProspectConnect" :
+    mode === "muxi" ? "Muxi workspace" :
+    mode === "pc" ? "ProspectConnect workspace" : "SalesIntel workspace";
+  renderDropdown();
+  document.getElementById("page-title").textContent = TITLE_BY_MODE[mode];
+  document.getElementById("page-sub").textContent = SUB_BY_MODE[mode];
+  renderNav(mode);
+  renderCards(mode);
+
+  const showSI = mode === "si";
+  const showPCIcons = mode === "pc" || (mode === "merged");
+  document.getElementById("search").classList.toggle("topbar-hide", !showSI);
+  document.getElementById("credits-slot").classList.toggle("topbar-hide", !showSI);
+  document.getElementById("pc-icons").classList.toggle("topbar-hide", !showPCIcons);
+}
+
+function switchTo(mode) {
+  if (currentMode === mode) return;
+  const sso = document.getElementById("sso");
+  const ssoText = document.getElementById("sso-text");
+  ssoText.textContent = "Connecting you to " + LABEL_BY_MODE[mode] + "...";
+  sso.classList.add("show");
+  setTimeout(() => {
+    applyMode(mode);
+    sso.classList.remove("show");
+  }, 900);
+}
+
+function setVariant(v) {
+  variant = v;
+  document.getElementById("vbtn-two").classList.toggle("active", v === "two");
+  document.getElementById("vbtn-three").classList.toggle("active", v === "three");
+  applyMode("si");
+}
+
+applyMode("si");
+</script>
+
+</body>
+</html>
