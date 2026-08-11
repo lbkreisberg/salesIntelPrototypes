@@ -14,3 +14,5 @@ Intent Topic Recommender: https://lbkreisberg.github.io/salesIntelPrototypes/Int
 Data Waterfall Wireframes: https://lbkreisberg.github.io/salesIntelPrototypes/data-waterfall-wireframes.html
 
 Sales Acceleration Workplace Switcher: https://lbkreisberg.github.io/salesIntelPrototypes/si-workspace-switcher-wireframe.html
+
+EventsIntel: https://lbkreisberg.github.io/salesIntelPrototypes/EventsIntel-standalone.html
