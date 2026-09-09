@@ -16,3 +16,5 @@ Data Waterfall Wireframes: https://lbkreisberg.github.io/salesIntelPrototypes/da
 Sales Acceleration Workplace Switcher: https://lbkreisberg.github.io/salesIntelPrototypes/si-workspace-switcher-wireframe.html
 
 EventsIntel: https://lbkreisberg.github.io/salesIntelPrototypes/EventsIntel-standalone.html
+
+RevDriver Info Banner: https://lbkreisberg.github.io/salesIntelPrototypes/RevDriver-Info-Banner.html
