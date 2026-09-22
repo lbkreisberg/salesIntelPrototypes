@@ -18,3 +18,5 @@ Sales Acceleration Workplace Switcher: https://lbkreisberg.github.io/salesIntelP
 EventsIntel: https://lbkreisberg.github.io/salesIntelPrototypes/EventsIntel-standalone.html
 
 RevDriver Info Banner: https://lbkreisberg.github.io/salesIntelPrototypes/RevDriver-Info-Banner.html 
+
+Data Waterfall Prototype: https://lbkreisberg.github.io/salesIntelPrototypes/data-waterfall-prototype.html 
