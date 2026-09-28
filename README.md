@@ -20,3 +20,5 @@ EventsIntel: https://lbkreisberg.github.io/salesIntelPrototypes/EventsIntel-stan
 RevDriver Info Banner: https://lbkreisberg.github.io/salesIntelPrototypes/RevDriver-Info-Banner.html 
 
 Data Waterfall Prototype: https://lbkreisberg.github.io/salesIntelPrototypes/data-waterfall-prototype.html 
+
+ICPIntel Modeling from CRM Sync: https://lbkreisberg.github.io/salesIntelPrototypes/ICPIntel-CRM-Seeds.html
