@@ -22,3 +22,5 @@ RevDriver Info Banner: https://lbkreisberg.github.io/salesIntelPrototypes/RevDri
 Data Waterfall Prototype: https://lbkreisberg.github.io/salesIntelPrototypes/data-waterfall-prototype.html 
 
 ICPIntel Modeling from CRM Sync: https://lbkreisberg.github.io/salesIntelPrototypes/ICPIntel-CRM-Seeds.html
+
+Attributed User (SFMP Enrichment): https://lbkreisberg.github.io/salesIntelPrototypes/Attributed-User-Prototype.html
